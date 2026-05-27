@@ -1,0 +1,135 @@
+<view class="container">
+  <view class="content" bindscroll="onPageScroll">
+    <!-- 顶部导航栏 -->
+    <view class="nav-bar">
+      <view class="logo">医视界</view>
+      <view class="nav-right">
+        <view class="nav-item" bindtap="contactService">
+          <image src="/images/icons/service.png" class="nav-icon"></image>
+          客服
+        </view>
+      </view>
+    </view>
+
+    <!-- 轮播图 -->
+    <swiper class="banner-swiper" indicator-dots autoplay interval="5000" duration="500">
+      <block wx:for="{{banners}}" wx:key="id">
+        <swiper-item>
+          <image src="{{item.image}}" class="banner-image" mode="aspectFill"></image>
+          <view class="banner-title">{{item.title}}</view>
+        </swiper-item>
+      </block>
+    </swiper>
+
+    <!-- 快速导航 -->
+    <view class="quick-nav card">
+      <view class="nav-item" bindtap="goToTravel">
+        <view class="nav-icon">✈️</view>
+        <view class="nav-text">旅居</view>
+      </view>
+      <view class="nav-item" bindtap="goToTravel">
+        <view class="nav-icon">📚</view>
+        <view class="nav-text">课程</view>
+      </view>
+      <view class="nav-item" bindtap="goToTravel">
+        <view class="nav-icon">🏥</view>
+        <view class="nav-text">产品</view>
+      </view>
+      <view class="nav-item" bindtap="goToTravel">
+        <view class="nav-icon">👥</view>
+        <view class="nav-text">社群</view>
+      </view>
+    </view>
+
+    <!-- 老师/专家展示 -->
+    <view class="section">
+      <view class="section-title">权威专家团队</view>
+      <view class="teachers-list">
+        <block wx:for="{{teachers}}" wx:key="id">
+          <view class="teacher-card card">
+            <image src="{{item.avatar}}" class="teacher-avatar"></image>
+            <view class="teacher-name">{{item.name}}</view>
+            <view class="teacher-title">{{item.title}}</view>
+            <view class="teacher-intro">{{item.intro}}</view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <!-- 热门旅居项目 -->
+    <view class="section">
+      <view class="section-header">
+        <view class="section-title">热门旅居项目</view>
+        <view class="see-more" bindtap="goToTravel">查看更多 ></view>
+      </view>
+      <view class="travel-list">
+        <block wx:for="{{travelProjects}}" wx:key="id">
+          <view class="travel-card card" bindtap="viewTravelDetail" data-id="{{item.id}}">
+            <image src="{{item.image}}" class="travel-image" mode="aspectFill"></image>
+            <view class="travel-info">
+              <view class="travel-name">{{item.name}}</view>
+              <view class="travel-location">📍 {{item.location}}</view>
+              <view class="travel-footer">
+                <view class="travel-rating">⭐ {{item.rating}}</view>
+                <view class="travel-days">{{item.days}}天</view>
+              </view>
+              <view class="travel-price">¥{{item.price}}</view>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <!-- 免费健康课程 -->
+    <view class="section">
+      <view class="section-title">免费健康课程</view>
+      <view class="courses-grid">
+        <block wx:for="{{courses}}" wx:key="id">
+          <view class="course-item" bindtap="viewCourseDetail" data-id="{{item.id}}">
+            <image src="{{item.image}}" class="course-image" mode="aspectFill"></image>
+            <view class="course-title">{{item.title}}</view>
+            <view class="course-category">{{item.category}}</view>
+            <view class="course-views">👁 {{item.views}}</view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <!-- 学员风采 -->
+    <view class="section">
+      <view class="section-title">学员风采</view>
+      <scroll-view class="members-scroll" scroll-x>
+        <block wx:for="{{members}}" wx:key="id">
+          <view class="member-card">
+            <image src="{{item.image}}" class="member-image" mode="aspectFill"></image>
+            <view class="member-name">{{item.name}}</view>
+            <view class="member-feedback">{{item.feedback}}</view>
+          </view>
+        </block>
+      </scroll-view>
+    </view>
+
+    <!-- 健康产品推荐 -->
+    <view class="section">
+      <view class="section-title">健康产品推荐</view>
+      <view class="products-grid">
+        <block wx:for="{{products}}" wx:key="id">
+          <view class="product-item" bindtap="viewProductDetail" data-id="{{item.id}}">
+            <image src="{{item.image}}" class="product-image" mode="aspectFill"></image>
+            <view class="product-name">{{item.name}}</view>
+            <view class="product-price">¥{{item.price}}</view>
+            <view class="product-sales">已售 {{item.sales}}</view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <!-- 底部客服区 -->
+    <view class="bottom-service card">
+      <view class="service-icon">💬</view>
+      <view class="service-text">有任何问题？点击联系我们</view>
+      <button class="service-btn" open-type="contact">在线客服</button>
+    </view>
+
+  </view>
+</view>
