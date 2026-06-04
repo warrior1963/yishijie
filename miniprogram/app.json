@@ -1,79 +1,55 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/travel/list",
-    "pages/travel/detail",
-    "pages/travel/register",
-    "pages/travel/payment",
     "pages/course/list",
     "pages/course/detail",
     "pages/mall/list",
-    "pages/mall/detail",
     "pages/mall/cart",
-    "pages/mall/order",
-    "pages/member/center",
-    "pages/member/health-record",
-    "pages/member/itinerary",
-    "pages/member/orders",
-    "pages/community/index",
+    "pages/health-record/index",
     "pages/promote/index",
-    "pages/promote/poster",
-    "pages/promote/records"
+    "pages/itinerary/index",
+    "pages/community/index",
+    "pages/center/index",
+    "pages/order/list",
+    "pages/login/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
+    "navigationBarBackgroundColor": "#FFF",
     "navigationBarTitleText": "医视界",
-    "navigationBarTextStyle": "black",
-    "navigationStyle": "custom"
+    "navigationBarTextStyle": "black"
   },
   "tabBar": {
     "color": "#999",
-    "selectedColor": "#00B26A",
-    "backgroundColor": "#fafafa",
+    "selectedColor": "#1890ff",
+    "backgroundColor": "#fff",
     "borderStyle": "black",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页",
-        "iconPath": "images/tabbar/home.png",
-        "selectedIconPath": "images/tabbar/home-active.png"
-      },
-      {
-        "pagePath": "pages/travel/list",
-        "text": "旅居",
-        "iconPath": "images/tabbar/travel.png",
-        "selectedIconPath": "images/tabbar/travel-active.png"
+        "text": "首页"
       },
       {
         "pagePath": "pages/course/list",
-        "text": "课程",
-        "iconPath": "images/tabbar/course.png",
-        "selectedIconPath": "images/tabbar/course-active.png"
+        "text": "课程"
       },
       {
         "pagePath": "pages/mall/list",
-        "text": "商城",
-        "iconPath": "images/tabbar/mall.png",
-        "selectedIconPath": "images/tabbar/mall-active.png"
+        "text": "商城"
       },
       {
-        "pagePath": "pages/member/center",
-        "text": "我的",
-        "iconPath": "images/tabbar/user.png",
-        "selectedIconPath": "images/tabbar/user-active.png"
+        "pagePath": "pages/promote/index",
+        "text": "推广"
+      },
+      {
+        "pagePath": "pages/center/index",
+        "text": "我的"
       }
     ]
   },
-  "permission": {
-    "scope.userLocation": {
-      "desc": "用于显示您的位置信息"
-    }
+  "networkTimeout": {
+    "request": 10000,
+    "downloadFile": 10000
   },
-  "requiredPrivateInfos": [
-    "chooseLocation",
-    "getLocation",
-    "onLocationChange",
-    "startLocationUpdateBackground"
-  ]
+  "debug": false
 }

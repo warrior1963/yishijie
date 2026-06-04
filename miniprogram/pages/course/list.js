@@ -1,1 +1,62 @@
-const app = getApp();\n\nPage({\n  data: {\n    courses: [],\n    categories: ['全部', '心脑血管', '睡眠调理', '慢病管理', '健康养生', '饮食养生'],\n    activeCategory: 0,\n    loading: true,\n    page: 1,\n    pageSize: 10,\n    hasMore: true\n  },\n\n  onLoad() {\n    this.loadCourses();\n  },\n\n  // 加载课程列表\n  loadCourses() {\n    const mockCourses = [\n      {\n        id: 1,\n        title: '心脑血管健康讲座',\n        category: '心脑血管',\n        type: 'VIDEO',\n        coverImage: 'https://via.placeholder.com/200x150?text=Course1',\n        teacher: '王医生',\n        views: 2341,\n        likes: 128,\n        free: true,\n        duration: '45分钟'\n      },\n      {\n        id: 2,\n        title: '睡眠调理秘诀',\n        category: '睡眠调理',\n        type: 'LIVE',\n        coverImage: 'https://via.placeholder.com/200x150?text=Course2',\n        teacher: '李教授',\n        views: 1892,\n        likes: 256,\n        free: true,\n        duration: '直播'\n      },\n      {\n        id: 3,\n        title: '慢病管理指南',\n        category: '慢病管理',\n        type: 'ARTICLE',\n        coverImage: 'https://via.placeholder.com/200x150?text=Course3',\n        teacher: '张医生',\n        views: 3421,\n        likes: 89,\n        free: true,\n        duration: '文章'\n      },\n      {\n        id: 4,\n        title: '中医养生入门',\n        category: '健康养生',\n        type: 'VIDEO',\n        coverImage: 'https://via.placeholder.com/200x150?text=Course4',\n        teacher: '陈教授',\n        views: 1564,\n        likes: 321,\n        free: true,\n        duration: '60分钟'\n      },\n      {\n        id: 5,\n        title: '健康饮食搭配',\n        category: '饮食养生',\n        type: 'ARTICLE',\n        coverImage: 'https://via.placeholder.com/200x150?text=Course5',\n        teacher: '营养师小王',\n        views: 2765,\n        likes: 432,\n        free: true,\n        duration: '文章'\n      },\n      {\n        id: 6,\n        title: '老年人运动保健',\n        category: '健康养生',\n        type: 'VIDEO',\n        coverImage: 'https://via.placeholder.com/200x150?text=Course6',\n        teacher: '运动医学专家',\n        views: 1234,\n        likes: 156,\n        free: true,\n        duration: '30分钟'\n      }\n    ];\n\n    this.setData({\n      courses: mockCourses,\n      loading: false\n    });\n  },\n\n  // 切换分类\n  selectCategory(e) {\n    const index = e.currentTarget.dataset.index;\n    this.setData({ activeCategory: index });\n    this.loadCourses();\n  },\n\n  // 查看课程详情\n  viewDetail(e) {\n    const id = e.currentTarget.dataset.id;\n    wx.navigateTo({\n      url: `/pages/course/detail?id=${id}`\n    });\n  },\n\n  // 点赞\n  likeCourse(e) {\n    e.stopPropagation();\n    const courseId = e.currentTarget.dataset.id;\n    const index = this.data.courses.findIndex(c => c.id === courseId);\n    if (index > -1) {\n      const courses = this.data.courses;\n      courses[index].likes += 1;\n      this.setData({ courses });\n      wx.showToast({\n        title: '点赞成功',\n        icon: 'success',\n        duration: 1000\n      });\n    }\n  },\n\n  // 收藏\n  collectCourse(e) {\n    e.stopPropagation();\n    wx.showToast({\n      title: '已收藏',\n      icon: 'success',\n      duration: 1000\n    });\n  },\n\n  // 下拉刷新\n  onPullDownRefresh() {\n    this.setData({ page: 1 });\n    this.loadCourses();\n    wx.stopPullDownRefresh();\n  },\n\n  // 上拉加载\n  onReachBottom() {\n    if (this.data.hasMore) {\n      this.setData({ page: this.data.page + 1 });\n      this.loadCourses();\n    }\n  }\n});\n
+const request = require('../../utils/request');
+
+Page({
+  data: {
+    courseList: [],
+    page: 1,
+    limit: 10,
+    total: 0,
+    loading: false,
+    finished: false
+  },
+
+  onLoad() {
+    this.loadCourses();
+  },
+
+  loadCourses() {
+    if (this.data.loading || this.data.finished) return;
+    
+    this.setData({ loading: true });
+    
+    request.get(`/course/list?page=${this.data.page}&limit=${this.data.limit}`)
+      .then(res => {
+        const newList = this.data.page === 1 ? res.data : [...this.data.courseList, ...res.data];
+        this.setData({
+          courseList: newList,
+          page: this.data.page + 1,
+          total: res.total || 0,
+          loading: false,
+          finished: newList.length >= res.total
+        });
+      })
+      .catch(err => {
+        console.error('获取课程列表失败', err);
+        wx.showToast({
+          title: '获取课程列表失败',
+          icon: 'none'
+        });
+        this.setData({ loading: false });
+      });
+  },
+
+  goToDetail(e) {
+    const courseId = e.currentTarget.dataset.courseId;
+    wx.navigateTo({
+      url: `/pages/course/detail?id=${courseId}`
+    });
+  },
+
+  onReachBottom() {
+    this.loadCourses();
+  },
+
+  onPullDownRefresh() {
+    this.setData({
+      page: 1,
+      courseList: []
+    });
+    this.loadCourses();
+    wx.stopPullDownRefresh();
+  }
+});

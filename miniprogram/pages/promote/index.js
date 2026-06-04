@@ -1,1 +1,87 @@
-const app = getApp();\n\nPage({\n  data: {\n    userInfo: null,\n    promoteCode: 'YISHIJIE12345',\n    poster: null,\n    records: [],\n    statistics: {\n      followers: 0,\n      sales: 0,\n      earnings: 0\n    },\n    loading: true\n  },\n\n  onLoad() {\n    this.loadPromoteData();\n  },\n\n  onShow() {\n    this.checkUserLogin();\n  },\n\n  // 检查登录\n  checkUserLogin() {\n    const userInfo = wx.getStorageSync('userInfo');\n    if (userInfo) {\n      this.setData({ userInfo });\n    }\n  },\n\n  // 加载推广数据\n  loadPromoteData() {\n    const mockRecords = [\n      {\n        id: 1,\n        name: '张三',\n        status: 'CONVERTED',\n        amount: 3980,\n        commission: 398,\n        date: '2026-05-20'\n      },\n      {\n        id: 2,\n        name: '李四',\n        status: 'PENDING',\n        amount: 2980,\n        commission: 298,\n        date: '2026-05-18'\n      },\n      {\n        id: 3,\n        name: '王五',\n        status: 'CONVERTED',\n        amount: 5980,\n        commission: 598,\n        date: '2026-05-15'\n      }\n    ];\n\n    this.setData({\n      records: mockRecords,\n      statistics: {\n        followers: 18,\n        sales: 3,\n        earnings: 1294\n      },\n      loading: false\n    });\n  },\n\n  // 复制推广码\n  copyCode() {\n    wx.setClipboardData({\n      data: this.data.promoteCode,\n      success: () => {\n        wx.showToast({\n          title: '推广码已复制',\n          icon: 'success'\n        });\n      }\n    });\n  },\n\n  // 生成海报\n  generatePoster() {\n    wx.showLoading({ title: '生成中...' });\n    \n    setTimeout(() => {\n      wx.hideLoading();\n      wx.showToast({\n        title: '海报已生成',\n        icon: 'success'\n      });\n      \n      // 生成海报后保存到本地\n      this.setData({\n        poster: {\n          url: 'https://via.placeholder.com/300x400?text=Poster',\n          generatedAt: new Date().toLocaleString()\n        }\n      });\n    }, 1500);\n  },\n\n  // 保存海报\n  savePoster() {\n    if (!this.data.poster) {\n      wx.showToast({\n        title: '请先生成海报',\n        icon: 'none'\n      });\n      return;\n    }\n\n    wx.downloadFile({\n      url: this.data.poster.url,\n      success: (res) => {\n        if (res.statusCode === 200) {\n          wx.saveImageToPhotosAlbum({\n            filePath: res.tempFilePath,\n            success: () => {\n              wx.showToast({\n                title: '已保存到相册',\n                icon: 'success'\n              });\n            },\n            fail: () => {\n              wx.showToast({\n                title: '保存失败',\n                icon: 'none'\n              });\n            }\n          });\n        }\n      }\n    });\n  },\n\n  // 分享\n  shareToFriend() {\n    wx.showShareMenu({\n      withShareTicket: true\n    });\n  },\n\n  // 查看详细数据\n  viewDetail() {\n    wx.showToast({\n      title: '详细数据页面开发中',\n      icon: 'none'\n    });\n  }\n});\n
+const request = require('../../utils/request');
+
+Page({
+  data: {
+    promotionCode: '',
+    promotionData: {
+      totalRefer: 0,
+      referCount: 0,
+      totalReward: 0
+    },
+    loading: false
+  },
+
+  onLoad() {
+    this.initPromotion();
+  },
+
+  initPromotion() {
+    request.get('/promotion/my-info')
+      .then(res => {
+        this.setData({
+          promotionCode: res.data.promotionCode,
+          promotionData: res.data
+        });
+      })
+      .catch(err => {
+        console.error('获取推广信息失败', err);
+        wx.showToast({
+          title: '获取推广信息失败',
+          icon: 'none'
+        });
+      });
+  },
+
+  copyPromotionCode() {
+    wx.setClipboardData({
+      data: this.data.promotionCode,
+      success() {
+        wx.showToast({
+          title: '推广码已复制',
+          icon: 'success'
+        });
+      }
+    });
+  },
+
+  generatePoster() {
+    this.setData({ loading: true });
+    request.get(`/promotion/generate-poster?code=${this.data.promotionCode}`)
+      .then(res => {
+        wx.saveImageToPhotosAlbum({
+          filePath: res.data.posterUrl,
+          success: () => {
+            wx.showToast({
+              title: '海报已保存到相册',
+              icon: 'success'
+            });
+          },
+          fail: () => {
+            wx.showToast({
+              title: '保存失败',
+              icon: 'none'
+            });
+          },
+          complete: () => {
+            this.setData({ loading: false });
+          }
+        });
+      })
+      .catch(err => {
+        console.error('生成海报失败', err);
+        wx.showToast({
+          title: '生成海报失败',
+          icon: 'none'
+        });
+        this.setData({ loading: false });
+      });
+  },
+
+  onShareAppMessage() {
+    return {
+      title: `我的专属推广码：${this.data.promotionCode}`,
+      path: `/pages/promote/index?promotionCode=${this.data.promotionCode}`,
+      imageUrl: '/images/share-poster.png'
+    };
+  }
+});
